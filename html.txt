@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Bodoni+Moda:wght@400;700&display=swap" rel="stylesheet">
+    <title>Jay & Michelle's Wedding</title>
+    <style>
+        /* 保留你原有的所有 CSS 樣式 */
+        body {
+            background-color: #1a1512;
+            background-image: radial-gradient(circle at top, #3d342c 0%, #1a1512 100%);
+            color: #e0d5c1;
+            font-family: "PingFang TC", "STHeiti", sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            padding: 140px 20px 40px; 
+            animation: fadeInUp 1.5s ease forwards;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-text {
+            font-family: 'Pinyon Script', cursive;
+            color: #d4a373;
+            font-size: 16rem; 
+            position: absolute;
+            top: -20px;
+            z-index: 2;
+            white-space: nowrap;
+            opacity: 0.6;
+            pointer-events: none;
+            font-weight: 300;
+        }
+
+        .main-title {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 2.2rem;
+            color: #e0d5c1;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 2px;
+        }
+
+        .main-container {
+            width: 85%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-radius: 35px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 1.5s ease forwards;
+            animation-delay: 0.8s;
+            opacity: 0;
+            box-sizing: border-box;
+        }
+
+        .action-btn {
+            background-color: #d4a373;
+            color: #1a1512;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            text-decoration: none;
+        }
+
+        .action-btn:hover { background-color: #e0d5c1; transform: scale(1.02); }
+        .gallery-btn { background: rgba(255, 255, 255, 0.1); color: #e0d5c1; border: 1px solid rgba(212, 163, 115, 0.4); }
+        .btn-en { font-family: 'Bodoni Moda', serif; font-size: 1.1rem; font-weight: bold; }
+        .btn-ch { font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
+
+        /* 上傳狀態提示 */
+        #status-msg { font-size: 0.8rem; color: #d4a373; margin-top: 10px; min-height: 1.2rem; }
+
+        .gallery-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .photo-placeholder {
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(224, 213, 193, 0.3);
+            font-size: 0.6rem;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .footer-info { margin: 40px 0; font-size: 0.7rem; color: #5d5245; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span class="welcome-text">Welcome</span>
+        <h1 class="main-title">Jay & Michelle's Wedding</h1>
+    </div>
+
+    <div class="main-container">
+        <label for="file-upload" class="action-btn" id="upload-label">
+            <span class="btn-en">UPLOAD PHOTO</span>
+            <span class="btn-ch">點擊分享 ‧ 當日美照</span>
+        </label>
+        <input id="file-upload" type="file" style="display:none" accept="image/*" multiple>
+        
+        <div id="status-msg"></div>
+
+        <a href="你的GoogleDrive資料夾連結" target="_blank" class="action-btn gallery-btn">
+            <span class="btn-en">GUEST GALLERY</span>
+            <span class="btn-ch">進入相簿 ‧ 下載回憶</span>
+        </a>
+
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0;"></div>
+        <p style="font-size: 0.75rem; color: #d4a373; margin-bottom: 10px; font-family: 'Bodoni Moda', serif; letter-spacing: 1px;">Recent Moments</p>
+        
+        <div class="gallery-preview" id="preview-container">
+            <div class="photo-placeholder">PHOTO</div>
+            <div class="photo-placeholder">PHOTO</div>
+            <div class="photo-placeholder">PHOTO</div>
+        </div>
+    </div>
+
+    <div class="footer-info">MARCH 04, 2026 | TAIPEI</div>
+
+    <script>
+        // --- 設定區 ---
+        const GAS_URL = "你的GAS部署網址貼在這裡"; // <--- 填入第一步產生的網址
+
+        const fileInput = document.getElementById('file-upload');
+        const statusMsg = document.getElementById('status-msg');
+        const previewContainer = document.getElementById('preview-container');
+
+        fileInput.addEventListener('change', async function(e) {
+            const files = e.target.files;
+            if (files.length === 0) return;
+
+            statusMsg.innerText = "準備上傳中...";
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // 1. 前端即時預覽
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const div = document.createElement('div');
+                    div.className = 'photo-placeholder';
+                    div.style.backgroundImage = `url(${event.target.result})`;
+                    div.innerHTML = '';
+                    previewContainer.insertBefore(div, previewContainer.firstChild);
+                    if (previewContainer.children.length > 6) previewContainer.lastElementChild.remove();
+                };
+                reader.readAsDataURL(file);
+
+                // 2. 轉換為 Base64 並上傳至 GAS
+                try {
+                    statusMsg.innerText = `正在上傳第 ${i+1}/${files.length} 張...`;
+                    const base64Data = await toBase64(file);
+                    const payload = {
+                        filename: file.name,
+                        contentType: file.type,
+                        base64: base64Data.split(',')[1]
+                    };
+
+                    const response = await fetch(GAS_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.result === "success") {
+                        statusMsg.innerText = "上傳成功！感謝分享";
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    statusMsg.innerText = "上傳失敗，請稍後再試";
+                }
+            }
+        });
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    </script>
+</body>
+</html>
