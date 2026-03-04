@@ -140,7 +140,7 @@
         
         <div id="status-msg"></div>
 
-        <a href="你的GoogleDrive資料夾連結" target="_blank" class="action-btn gallery-btn">
+        <a href="https://drive.google.com/drive/folders/1woOc6AZ8ilHubBUYpeBKlPX6s3k5u_-j?usp=sharing" target="_blank" class="action-btn gallery-btn">
             <span class="btn-en">GUEST GALLERY</span>
             <span class="btn-ch">進入相簿 ‧ 下載回憶</span>
         </a>
@@ -159,7 +159,7 @@
 
     <script>
         // --- 設定區 ---
-        const GAS_URL = "你的GAS部署網址貼在這裡"; // <--- 填入第一步產生的網址
+        const GAS_URL = "https://0620jnm.github.io/Wedding/"; // <--- 填入第一步產生的網址
 
         const fileInput = document.getElementById('file-upload');
         const statusMsg = document.getElementById('status-msg');
@@ -222,4 +222,5 @@
         });
     </script>
 </body>
+
 </html>
