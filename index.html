@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="href="https://drive.google.com/drive/folders/1woOc6AZ8ilHubBUYpeBKlPX6s3k5u_-j?usp=sharing" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Bodoni+Moda:wght@400;700&display=swap" rel="stylesheet">
     <title>Jay & Michelle's Wedding</title>
     <style>
-        /* --- 恢復原始黑金奢華風 --- */
         body {
             background-color: #1a1512;
             background-image: radial-gradient(circle at top, #3d342c 0%, #1a1512 100%);
@@ -17,17 +16,17 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         .header {
             text-align: center;
             padding: 100px 20px 30px; 
             position: relative;
+            width: 100%;
         }
 
         .welcome-text {
-            font-family: 'Pinyon Script', cursive;
+            font-family: 'Pinyon Script', cursive !important;
             color: #d4a373;
             font-size: 8rem; 
             position: absolute;
@@ -50,7 +49,7 @@
 
         .main-container {
             width: 85%;
-            max-width: 380px; /* 稍微縮小寬度讓比例更精緻 */
+            max-width: 380px;
             background: rgba(255, 255, 255, 0.08); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -60,24 +59,23 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             margin-top: 20px;
-            box-sizing: border-box; /* 確保寬度計算正確 */
+            box-sizing: border-box;
         }
 
-        /* 修正按鈕對齊 */
         .action-btn {
             background-color: #d4a373;
             color: #1a1512;
             text-decoration: none;
             padding: 18px 10px; 
             border-radius: 15px;
-            display: block; /* 統一為區塊元素 */
+            display: block; 
             margin-bottom: 20px;
             font-weight: bold;
             transition: 0.3s;
             cursor: pointer;
             border: none;
-            width: 100%; /* 強制寬度填滿容器 */
-            box-sizing: border-box; /* 防止 padding 撐破寬度 */
+            width: 100%; 
+            box-sizing: border-box; 
             text-align: center;
         }
 
@@ -88,10 +86,10 @@
             margin-bottom: 0;
         }
 
-        .btn-en { display: block; font-family: 'Bodoni Moda', serif; font-size: 1.2rem; line-height: 1.2; }
+        .btn-en { display: block; font-family: 'Bodoni Moda', serif; font-size: 1.2rem; }
         .btn-ch { display: block; font-size: 0.8rem; opacity: 0.8; margin-top: 4px; }
 
-        #status-msg { margin: 15px 0 0; font-size: 0.9rem; color: #d4a373; min-height: 1.2rem; }
+        #status-msg { margin: 20px 0 0; font-size: 0.9rem; color: #d4a373; min-height: 1.2rem; font-weight: bold; }
         .footer { margin-top: auto; padding: 40px; font-size: 0.7rem; color: #5d5245; letter-spacing: 2px; }
     </style>
 </head>
@@ -99,7 +97,7 @@
 
     <div class="header">
         <span class="welcome-text">Welcome</span>
-        <h1 class="main-title">Jay & Michelle</h1>
+        <h1 class="main-title">Jay & Michelle's Wedding</h1>
     </div>
 
     <div class="main-container">
@@ -109,7 +107,7 @@
         </label>
         <input id="file-upload" type="file" style="display:none" accept="image/*" multiple>
         
-        <a href="這裡貼上你的雲端硬碟連結" target="_blank" class="action-btn gallery-btn">
+        <a href="https://你的雲端硬碟完整網址" id="album-link" target="_blank" class="action-btn gallery-btn">
             <span class="btn-en">GUEST GALLERY</span>
             <span class="btn-ch">進入相簿 ‧ 下載回憶</span>
         </a>
@@ -120,22 +118,23 @@
     <div class="footer">MARCH 04, 2026 | TAIPEI</div>
 
     <script>
-        // 【關鍵】請務必確認這串網址結尾是 /exec
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxPbIU-rY7vWBV59KVOlKxIgdsLE_dMri7BqvjEL1itvZClO3RQjTpAk3EkHh-teHYD3g/exec"; 
+        // --- 務必更換為你最新部署的 /exec 網址 ---
+        const GAS_URL = "https://script.google.com/macros/s/你的序號/exec"; 
 
         const fileInput = document.getElementById('file-upload');
         const statusMsg = document.getElementById('status-msg');
 
-        fileInput.addEventListener('change', function(e) {
-            const files = e.target.files;
+        fileInput.addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
             if (files.length === 0) return;
 
-            Array.from(files).forEach((file, index) => {
-                statusMsg.innerText = `準備上傳 (${index + 1}/${files.length})...`;
-                
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                statusMsg.innerText = `正在傳送 (${i+1}/${files.length})...`;
+
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = function() {
+                reader.onload = async () => {
                     const base64Data = reader.result.split(',')[1];
                     const payload = {
                         filename: file.name,
@@ -143,24 +142,22 @@
                         base64: base64Data
                     };
 
-                    // 使用更穩定的傳送方式
-                    fetch(GAS_URL, {
-                        method: 'POST',
-                        body: JSON.stringify(payload),
-                        mode: 'no-cors' // 繞過 CORS 阻擋
-                    })
-                    .then(() => {
-                        statusMsg.innerText = "成功分享！感謝您的祝福";
-                        statusMsg.style.color = "#d4a373";
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                        statusMsg.innerText = "上傳失敗，請檢查網路";
-                    });
+                    try {
+                        // 使用傳統 XHR 繞過一些 Fetch 的嚴格限制
+                        const xhr = new XMLHttpRequest();
+                        xhr.open("POST", GAS_URL, true);
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                statusMsg.innerText = "成功分享！感謝您的祝福";
+                            }
+                        };
+                        xhr.send(JSON.stringify(payload));
+                    } catch (err) {
+                        statusMsg.innerText = "連線異常，請重試";
+                    }
                 };
-            });
+            }
         });
     </script>
 </body>
 </html>
-
