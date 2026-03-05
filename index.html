@@ -3,27 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&family=Playfair+Display:wght@700&family=Bodoni+Moda:wght@400;700&display=swap" rel="stylesheet">
     <title>Jay & Michelle's Wedding</title>
     <style>
-        /* 1. 字體定義 (如果沒有字體檔，會自動套用備用字體) */
-        @font-face {
-            font-family: 'Halo Handletter';
-            src: url('https://fonts.cdnfonts.com/s/14296/HaloHandletter.woff') format('woff');
-        }
-        @font-face {
-            font-family: 'MOON';
-            src: url('https://fonts.cdnfonts.com/s/14101/Moon-Bold.woff') format('woff');
-        }
-
-        /* 2. 動畫定義 */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translate(-50%, 10px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
-        }
+        /* 動畫定義 */
         @keyframes fadeInSimple {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInWelcome {
+            from { opacity: 0; transform: translate(-50%, 15px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
         }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
@@ -31,7 +21,7 @@
             background-color: #1a1512; 
             background-image: radial-gradient(circle at top, #3d342c 0%, #1a1512 100%); 
             color: #e0d5c1; 
-            font-family: 'Bodoni Moda', "PingFang TC", sans-serif;
+            font-family: 'Bodoni Moda', serif;
             margin: 0; 
             display: flex; 
             flex-direction: column; 
@@ -40,13 +30,13 @@
             overflow-x: hidden;
         }
 
-        .header { text-align: center; padding: 120px 20px 30px; position: relative; width: 100%; }
+        .header { text-align: center; padding: 130px 20px 30px; position: relative; width: 100%; }
         
-        /* Welcome 置中並最後淡入 */
+        /* 1. Welcome 置中、指定字體、最後淡入 */
         .welcome-text { 
-            font-family: 'Halo Handletter', cursive !important; 
+            font-family: 'Monsieur La Doulaise', cursive !important; 
             color: #d4a373; 
-            font-size: 6rem; 
+            font-size: 6.5rem; 
             position: absolute; 
             top: 20px; 
             left: 50%; 
@@ -54,20 +44,20 @@
             z-index: 0; 
             opacity: 0; 
             white-space: nowrap;
-            /* 延遲 2.5s 最後呈現 */
-            animation: fadeIn 2s ease-out 2.5s forwards; 
+            /* 所有元素(約1.5s)出現後，2s開始最後淡入 */
+            animation: fadeInWelcome 2s ease-out 2s forwards; 
         }
 
-        /* Jay & Michelle's Wedding */
+        /* 2. 主標題指定字體 */
         .main-title { 
-            font-family: 'MOON', 'Montserrat', sans-serif; 
-            font-size: 1.8rem; 
+            font-family: 'Playfair Display', serif; 
+            font-size: 2rem; 
             margin: 0; 
             position: relative; 
             z-index: 1; 
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             opacity: 0;
-            animation: fadeInSimple 1.5s ease-out 0.5s forwards; 
+            animation: fadeInSimple 1.5s ease-out 0.3s forwards; 
         }
         
         .main-container { 
@@ -82,7 +72,7 @@
             margin-top: 20px; 
             box-sizing: border-box; 
             opacity: 0;
-            animation: fadeInSimple 1.5s ease-out 1s forwards; 
+            animation: fadeInSimple 1.5s ease-out 0.8s forwards; 
         }
 
         .action-btn { 
@@ -101,12 +91,11 @@
 
         .gallery-btn { background: transparent; color: #d4a373; border: 1px solid #d4a373; margin-bottom: 0; }
         
-        .btn-en { display: block; font-family: 'MOON', sans-serif; font-size: 1.1rem; letter-spacing: 1px; }
+        .btn-en { display: block; font-family: 'Playfair Display', serif; font-size: 1.1rem; }
         .btn-ch { display: block; font-size: 0.8rem; opacity: 0.8; margin-top: 4px; }
 
-        /* 進度條樣式 */
         .progress-container { width: 100%; background-color: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 20px; display: none; overflow: hidden; height: 10px; }
-        #progress-bar { width: 2%; height: 100%; background-color: #d4a373; transition: width 0.4s ease-in-out; }
+        #progress-bar { width: 2%; height: 100%; background-color: #d4a373; transition: width 0.4s; }
         
         .uploading-anim { animation: pulse 1.5s infinite ease-in-out; }
 
@@ -118,12 +107,13 @@
             white-space: pre-wrap; 
             line-height: 1.6;
             opacity: 0;
-            animation: fadeInSimple 1.5s ease-out 1.5s forwards;
+            animation: fadeInSimple 1.5s ease-out 1.2s forwards;
         }
 
-        /* 成功文字淡入效果 */
-        .success-fade-in {
-            animation: fadeInSimple 1s ease-out forwards !important;
+        /* 成功訊息專用淡入類別 */
+        .final-success {
+            color: #ffffff !important;
+            animation: fadeInSimple 1.5s ease-out forwards !important;
         }
 
         .footer { 
@@ -133,7 +123,7 @@
             color: #5d5245; 
             letter-spacing: 2px; 
             opacity: 0;
-            animation: fadeInSimple 2s ease-out 2s forwards;
+            animation: fadeInSimple 2s ease-out 1.5s forwards;
         }
     </style>
 </head>
@@ -182,7 +172,7 @@
 
             isUploading = true;
             progressContainer.style.display = 'block';
-            progressBar.style.width = "5%"; // 一開始就給一點進度感
+            progressBar.style.width = "5%";
             statusMsg.classList.add('uploading-anim');
             statusMsg.style.color = "#d4a373";
             let successCount = 0;
@@ -190,32 +180,26 @@
             for (let i = 0; i < files.length; i++) {
                 try {
                     statusMsg.innerText = `正在上傳中 (${i + 1}/${files.length})\n請不要關閉頁面，以免導致上傳失敗`;
-                    
                     const base64Data = await compressImage(files[i]);
-                    
                     await fetch(GAS_URL, {
                         method: "POST",
                         mode: "no-cors",
                         body: JSON.stringify({ filename: files[i].name, contentType: "image/jpeg", base64: base64Data })
                     });
-
                     successCount++;
-                    // 修正後的進度條計算：確保第一張就有明顯進度
-                    const percent = Math.round((successCount / files.length) * 100);
-                    progressBar.style.width = percent + "%";
-                    
+                    progressBar.style.width = Math.round((successCount / files.length) * 100) + "%";
                 } catch (err) { console.error(err); }
             }
 
             isUploading = false;
             statusMsg.classList.remove('uploading-anim');
             
-            // 成功訊息淡入效果
-            statusMsg.innerText = ""; // 先清空
+            // 3. 修正：強制觸發上傳完成文字的淡入
+            statusMsg.innerText = ""; 
+            statusMsg.style.opacity = "0";
             setTimeout(() => {
-                statusMsg.style.color = "#ffffff";
                 statusMsg.innerText = "上傳完成！謝謝您的分享！✨";
-                statusMsg.classList.add('success-fade-in');
+                statusMsg.classList.add('final-success');
             }, 100);
             
             setTimeout(() => { 
@@ -233,16 +217,11 @@
                     img.src = e.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
+                        let width = img.width; let height = img.height;
                         const max_size = 2200; 
-                        if (width > height) {
-                            if (width > max_size) { height *= max_size / width; width = max_size; }
-                        } else {
-                            if (height > max_size) { width *= max_size / height; height = max_size; }
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
+                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } }
+                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
+                        canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         resolve(canvas.toDataURL('image/jpeg', 0.82).split(',')[1]);
