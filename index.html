@@ -10,17 +10,24 @@
         .header { text-align: center; padding: 100px 20px 30px; position: relative; width: 100%; }
         .welcome-text { font-family: 'Pinyon Script', cursive !important; color: #d4a373; font-size: 8rem; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 0; opacity: 0.4; white-space: nowrap; }
         .main-title { font-family: 'Bodoni Moda', serif; font-size: 2.2rem; margin: 0; position: relative; z-index: 1; letter-spacing: 2px; }
+        
         .main-container { width: 85%; max-width: 380px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 30px; padding: 40px 30px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); margin-top: 20px; box-sizing: border-box; }
         .action-btn { background-color: #d4a373; color: #1a1512; text-decoration: none; padding: 18px 10px; border-radius: 15px; display: block; margin-bottom: 20px; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; border: none; cursor: pointer; }
         .gallery-btn { background: transparent; color: #d4a373; border: 1px solid #d4a373; margin-bottom: 0; }
         .btn-en { display: block; font-family: 'Bodoni Moda', serif; font-size: 1.2rem; }
         .btn-ch { display: block; font-size: 0.8rem; opacity: 0.8; margin-top: 4px; }
-        #status-msg { margin-top: 20px; font-size: 0.9rem; color: #d4a373; min-height: 3rem; white-space: pre-wrap; font-weight: bold; }
+
+        /* 進度條樣式 */
+        .progress-container { width: 100%; background-color: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 20px; display: none; overflow: hidden; }
+        #progress-bar { width: 0%; height: 8px; background-color: #d4a373; transition: width 0.3s; }
+        #status-msg { margin-top: 15px; font-size: 0.85rem; color: #d4a373; min-height: 2.5rem; white-space: pre-wrap; }
+
         .footer { margin-top: auto; padding: 40px; font-size: 0.7rem; color: #5d5245; letter-spacing: 2px; }
     </style>
 </head>
 <body>
     <div class="header"><span class="welcome-text">Welcome</span><h1 class="main-title">Jay & Michelle's Wedding</h1></div>
+    
     <div class="main-container">
         <label for="file-upload" class="action-btn">
             <span class="btn-en">UPLOAD PHOTOS</span>
@@ -28,45 +35,52 @@
         </label>
         <input id="file-upload" type="file" style="display:none" accept="image/*" multiple>
         
-        <a href="https://drive.google.com/drive/folders/1woOc6AZ8ilHubBUYpeBKlPX6s3k5u_-j?usp=sharing" id="album-link" target="_blank" class="action-btn gallery-btn">
+        <a href="https://drive.google.com/drive/folders/1woOc6AZ8ilHubBUYpeBKlPX6s3k5u_-j?usp=sharing" target="_blank" class="action-btn gallery-btn">
             <span class="btn-en">GUEST GALLERY</span>
             <span class="btn-ch">進入相簿 ‧ 下載回憶</span>
         </a>
-        <div id="status-msg">準備就緒，請選擇照片</div>
+
+        <div class="progress-container" id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="status-msg">請選擇照片分享喜悅</div>
     </div>
+
     <div class="footer">MARCH 04, 2026 | TAIPEI</div>
 
     <script>
-        // 【重要檢查區】
-        // 1. 確保引號內是你的 GAS 網址，結尾是 /exec
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxPbIU-rY7vWBV59KVOlKxIgdsLE_dMri7BqvjEL1itvZClO3RQjTpAk3EkHh-teHYD3g/exec"; 
-
         const fileInput = document.getElementById('file-upload');
         const statusMsg = document.getElementById('status-msg');
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress-container');
+        
+        let isUploading = false;
+
+        // 防誤關警告
+        window.onbeforeunload = function() {
+            if (isUploading) return "照片尚在上傳中，離開頁面將導致失敗，確定要離開嗎？";
+        };
 
         fileInput.addEventListener('change', async function(e) {
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
 
-            // 檢查 GAS_URL 是否被正確填寫
-            if (GAS_URL.includes("你的GAS網址")) {
-                alert("錯誤：尚未設定 GAS 網址！");
-                return;
-            }
-
-            statusMsg.innerText = "開始處理上傳...";
+            isUploading = true;
+            progressContainer.style.display = 'block';
+            statusMsg.style.color = "#d4a373";
             let successCount = 0;
 
             for (let i = 0; i < files.length; i++) {
                 try {
                     const file = files[i];
-                    statusMsg.innerText = `正在壓縮並傳送 (${i + 1}/${files.length})...`;
+                    statusMsg.innerText = `正在優化並傳送第 ${i + 1}/${files.length} 張...`;
                     
                     const base64Data = await compressImage(file);
                     
-                    const response = await fetch(GAS_URL, {
+                    await fetch(GAS_URL, {
                         method: "POST",
-                        mode: "no-cors", // 這是為了避開瀏覽器安全性限制
+                        mode: "no-cors",
                         body: JSON.stringify({
                             filename: file.name,
                             contentType: "image/jpeg",
@@ -75,19 +89,24 @@
                     });
 
                     successCount++;
-                    statusMsg.innerText = `成功處理第 ${successCount} 張...`;
+                    // 更新進度條百分比
+                    const percent = Math.round((successCount / files.length) * 100);
+                    progressBar.style.width = percent + "%";
+                    
                 } catch (err) {
-                    statusMsg.innerText = `第 ${i + 1} 張發生錯誤: ${err.message}`;
                     console.error(err);
                 }
             }
 
-            statusMsg.innerText = `🎉 全部完成！共成功上傳 ${successCount} 張\n謝謝你們的紀錄！`;
-            statusMsg.style.color = "#d4a373";
+            isUploading = false;
+            statusMsg.innerText = "上傳完成！謝謝您的分享！✨";
+            statusMsg.style.color = "#8db600";
+            // 成功後延遲隱藏進度條
+            setTimeout(() => { progressContainer.style.display = 'none'; progressBar.style.width = "0%"; }, 3000);
         });
 
         function compressImage(file) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = (e) => {
@@ -97,8 +116,7 @@
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-                        const max_size = 2000; // 兼顧畫質與速度
-
+                        const max_size = 2200; // 溫和壓縮平衡點
                         if (width > height) {
                             if (width > max_size) { height *= max_size / width; width = max_size; }
                         } else {
@@ -108,14 +126,11 @@
                         canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+                        resolve(canvas.toDataURL('image/jpeg', 0.82).split(',')[1]);
                     };
-                    img.onerror = reject;
                 };
-                reader.onerror = reject;
             });
         }
     </script>
 </body>
 </html>
-
